@@ -1,0 +1,18 @@
+body {
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  background: #010203;
+}
+.container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.button {
+  background-image: "https://images.squarespace-cdn.com/content/v1/59a6fd41bebafb8b3f420544/1519917998014-G6SW42V49ZA7JSDOZJN3/image-asset.png?format=750w";
+}

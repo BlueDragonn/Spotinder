@@ -1,0 +1,114 @@
+body {
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  background: #010203;
+}
+.container {
+  margin: auto;
+  width: 60%;
+  text-align: center;
+}
+
+.cover {
+  margin: auto;
+  margin-top: 5em;
+  width: 60%;
+  background-size: cover;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px;
+  width: 500px;
+  height: 500px;
+}
+.song {
+  color: #ffffff;
+  font-size: 40px;
+}
+.artist {
+  color: #ffffff57;
+  font-size: 36px;
+}
+.follow {
+  margin: auto;
+  width: 50%;
+  margin-top: 20px;
+  text-align: center;
+}
+.followButton {
+  transition: transform 0.2s ease-out;
+}
+.followButton:hover {
+  filter: brightness(125%);
+  transform: scale(1.1);
+}
+.buttons {
+  margin: auto;
+  margin-top: 20px;
+  text-align: center;
+}
+.addToPlaylist {
+  margin-right: 1.5em;
+  transition: transform 0.2s ease-out;
+}
+.addToPlaylist:hover {
+  -webkit-transition: 0.2s;
+  filter: brightness(125%);
+  transform: scale(1.1);
+}
+.addToLiked {
+  margin-left: 1.5em;
+  transition: transform 0.2s ease-out;
+}
+.addToLiked:hover {
+  -webkit-transition: 0.2s;
+  filter: brightness(125%);
+  transform: scale(1.1);
+}
+
+.slidecontainer {
+  display: flex;
+  margin: auto;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1em;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 15%;
+  height: 15px;
+  background: #535353;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+  -webkit-border-top-left-radius: 50px;
+  -webkit-border-top-right-radius: 50px;
+  -webkit-border-bottom-right-radius: 50px;
+  -webkit-border-bottom-left-radius: 50px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 15px;
+  background: #c4c4c4;
+  cursor: pointer;
+  -webkit-border-top-left-radius: 50px;
+  -webkit-border-top-right-radius: 50px;
+  -webkit-border-bottom-right-radius: 50px;
+  -webkit-border-bottom-left-radius: 50px;
+}
+.slider::-webkit-slider-thumb:hover {
+  -webkit-transition: 0.2s;
+  background: #e0e0e0;
+}
+.GreenButtons {
+  background-color: #010203;
+  border: 0;
+}
