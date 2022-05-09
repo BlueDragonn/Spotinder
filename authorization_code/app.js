@@ -175,7 +175,56 @@ app.all("/request", (req, res) => {
     });;
   });
 
+  app.post('/addToLiked', function(req, res) {
 
+    spotifyApi.getMyCurrentPlayingTrack()
+    .then(function(data) {
+
+      spotifyApi.addToMySavedTracks([data.body.item.id])
+      .then(function(data) {
+        console.log('Added track!');
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    });;
+    res.end();
+  });
+
+  app.post('/followArtist', function(req, res) {
+
+    spotifyApi.getMyCurrentPlayingTrack()
+    .then(function(data) {
+
+      spotifyApi.followArtists([data.body.item.artists[0].id])
+      .then(function(data) {
+        console.log(data);
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    });;
+
+    res.end();
+  });
+
+  
+  app.post('/setVolume', function(req, res) {
+
+      spotifyApi.setVolume(req.body.volume)
+    .then(function () {
+      }, function(err) {
+      //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+      console.log('Something went wrong!', err);
+    });
+
+
+    res.end(); // VERY IMPORTANT TO END REQUEST
+  });
 
   app.listen(8888, () =>
   console.log(

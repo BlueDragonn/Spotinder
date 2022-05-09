@@ -118,6 +118,39 @@ $(document).ready(function () {
 	});
  });
 
+
+$("#addToLiked").click(function () {
+	$.post("/addToLiked",
+		{},
+		function (data, status) {
+			console.log(data);
+		});
+});
+
+$("#followArtist").click(function () {
+	$.post("/followArtist",
+		{},
+		function (data, status) {
+			console.log(data);
+		});
+});
+
+
+var slider = document.getElementById("myRange");
+
+slider.oninput = function() {
+  console.log(slider.value);
+
+  $.post("/setVolume",
+  {
+	  volume: slider.value
+  },
+  function (data, status) {
+	  console.log(data);
+  });
+
+}
+
 async function LoadInfoAboutSong()
 {
 	let data = new XMLHttpRequest()
