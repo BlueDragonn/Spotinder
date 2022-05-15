@@ -172,7 +172,10 @@ $("#followArtist").click(function () {
 		
 
 });
+$.getJSON('./getPlaylist', function(allPlaylistInfo) {
+	console.log(allPlaylistInfo.items[0].name);
 
+});
 
 var slider = document.getElementById("myRange");
 
