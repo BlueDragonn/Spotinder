@@ -259,18 +259,23 @@ app.all("/request", (req, res) => {
 
     spotifyApi.getMe()
     .then(function(data) {
-      console.log('Some information about the authenticated user', data.body);
+      //console.log('Some information about the authenticated user', data.body);
 
+      spotifyApi.getUserPlaylists()
+      .then(function(data) {
 
+        res.send(data.body);
 
+      },function(err) {
+        console.log('Something went wrong!', err);
+      });
+  
 
     }, function(err) {
       console.log('Something went wrong!', err);
     })
 
 
-
-    res.end(); // VERY IMPORTANT TO END REQUEST
   });
 
 

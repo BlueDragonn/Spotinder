@@ -1,4 +1,5 @@
 window.addEventListener("load", LoadInfoAboutSong);
+var playlist_id="NULL";
 
 async function LoadInfoAboutSong()
 {
@@ -169,13 +170,12 @@ $("#followArtist").click(function () {
 		function (data, status) {
 			console.log(data);
 		});
-		
+}); 
 
-});
-$.getJSON('./getPlaylist', function(allPlaylistInfo) {
-	console.log(allPlaylistInfo.items[0].name);
+	$.getJSON('./getPlaylist', function(allPlaylistInfo) {
+		console.log(allPlaylistInfo.items[0].name);
 
-});
+	});
 
 var slider = document.getElementById("myRange");
 
@@ -192,9 +192,28 @@ slider.oninput = function() {
 
 }
 
-
-
-
 setTimeout(() => {
 	LoadInfoAboutSong();
   }, 2000)
+
+  function addPlaylist(item){
+	let node = document.createElement("option");
+	node.value = item.id;
+	node.innerHTML = item.name + " (" + item.tracks.total + ")";
+	document.getElementById("playlists").appendChild(node); 
+  }
+
+  async function PlaylistsNames(){
+	console.log("xd1");
+  $.getJSON('./getPlaylist', (data) => {
+		  console.log("xd2");
+		  //data.items.forEach(item => addPlaylist(item));
+	  });
+	}
+
+  window.addEventListener("load", PlaylistsNames);
+
+  document.getElementById('playlists').addEventListener('change', function() {
+    playlist_id = document.getElementById("playlists").value;
+    console.log("You selected: "+playlist_id);
+  });
