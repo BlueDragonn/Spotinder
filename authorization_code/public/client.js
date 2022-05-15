@@ -1,5 +1,30 @@
 window.addEventListener("load", LoadInfoAboutSong);
+
+async function LoadInfoAboutSong()
+{
+	let data = new XMLHttpRequest()
 	
+	data.open('GET', "./data", true);
+
+	data.onload = function() {
+		if(data.status === 200)
+		{
+			let test = JSON.parse(this.response);
+
+            document.getElementById("artist").innerHTML = test.body.item.artists[0].name;
+            document.getElementById("song").innerHTML =  test.body.item.name;
+            document.getElementById("cover").src =  test.body.item.album.images[0].url;
+			
+		}
+		else 
+		{
+			console.log("Error");
+        }
+		
+	}
+	data.send();
+}
+
 	var trackOnLoad;
 	
 		$.getJSON('./request', function(test) {
@@ -12,6 +37,10 @@ window.addEventListener("load", LoadInfoAboutSong);
 				trackOnLoad=test.trackToPlay;
 				});
 				console.log("Recommended: "+trackOnLoad);
+
+				setTimeout(() => {
+					LoadInfoAboutSong();
+				  }, 1200)
 		}
 
 
@@ -57,7 +86,11 @@ window.addEventListener("load", LoadInfoAboutSong);
 					});
 					console.log("Playing: " + song_uri)
 					refreshRecommendedSong();
+					setTimeout(() => {
+						LoadInfoAboutSong();
+					  }, 1200)
 				};
+
 			playSongPlayer(trackOnLoad);
 
 			  document.getElementById("cover").ondragend  = function() {
@@ -78,7 +111,7 @@ window.addEventListener("load", LoadInfoAboutSong);
 					 playSongPlayer(trackOnLoad);
 					setTimeout(() => {
 						LoadInfoAboutSong();
-					  }, 800)
+					  }, 1200)
 					
 					  setTimeout(function() {				//aborting old request so requests do not overload
 						right.abort();
@@ -90,7 +123,7 @@ window.addEventListener("load", LoadInfoAboutSong);
 					 playSongPlayer(trackOnLoad);
 					 setTimeout(() => {
 						 LoadInfoAboutSong();
-					   }, 800)
+					   }, 1200)
 				 ;}
 			   }
 
@@ -108,6 +141,8 @@ window.addEventListener("load", LoadInfoAboutSong);
 
 
   /////////////////////////////////////
+
+
 $(document).ready(function () {
 	$("#submit").click(function () {
 	   $.post("/request",
@@ -125,6 +160,7 @@ $("#addToLiked").click(function () {
 		function (data, status) {
 			console.log(data);
 		});
+		
 });
 
 $("#followArtist").click(function () {
@@ -133,6 +169,8 @@ $("#followArtist").click(function () {
 		function (data, status) {
 			console.log(data);
 		});
+		
+
 });
 
 
@@ -151,31 +189,7 @@ slider.oninput = function() {
 
 }
 
-async function LoadInfoAboutSong()
-{
-	let data = new XMLHttpRequest()
-	
-	data.open('GET', "./data", true);
 
-	data.onload = function() {
-		if(data.status === 200)
-		{
-			//console.log('success')
-			let test = JSON.parse(this.response);
-            //console.log(test.body.item.album.images[0].url);
-            document.getElementById("artist").innerHTML = test.body.item.artists[0].name;
-            document.getElementById("song").innerHTML =  test.body.item.name;
-            document.getElementById("cover").src =  test.body.item.album.images[0].url;
-			
-		}
-		else 
-		{
-			console.log("Error");
-        }
-		
-	}
-	data.send();
-}
 
 
 setTimeout(() => {

@@ -142,6 +142,7 @@ app.all("/request", (req, res) => {
     }
     
     res.send(track);
+    res.end();
 
   }, function(err) {
     console.log("Something went wrong!", err);
@@ -153,12 +154,14 @@ app.all("/request", (req, res) => {
 
   //////////////////////////////////////////////
   app.get('/data', function(req, res) {
+
     spotifyApi.getMyCurrentPlayingTrack()
     .then(function(data) {
       res.send(data)
     }, function(err) {
       console.log('Something went wrong!', err);
     });;
+  
   });
 
   app.all('/right', function(req, res) { // adding song to seed
@@ -175,14 +178,38 @@ app.all("/request", (req, res) => {
     });;
   });
 
-  app.post('/addToLiked', function(req, res) {
+  app.all('/addToLiked', function(req, res) {
 
     spotifyApi.getMyCurrentPlayingTrack()
     .then(function(data) {
+      var currentlyPlaying = data.body.item.id;
 
-      spotifyApi.addToMySavedTracks([data.body.item.id])
+      spotifyApi.containsMySavedTracks([currentlyPlaying])
       .then(function(data) {
-        console.log('Added track!');
+    
+        var trackIsInYourMusic = data.body[0];
+    
+        if (trackIsInYourMusic) { // 'Track was found in the user\'s Your Music library'
+
+          spotifyApi.removeFromMySavedTracks([currentlyPlaying])
+            .then(function(data) {
+              console.log('Removed!');
+            }, function(err) {
+              console.log('Something went wrong!', err);
+            });
+            res.send("notFollowed");
+          
+        } else { //'Track was not found.'
+
+          spotifyApi.addToMySavedTracks([currentlyPlaying])
+          .then(function(data) {
+            console.log('Added track!');
+          }, function(err) {
+            console.log('Something went wrong!', err);
+          });
+
+          res.send("Followed");
+        }
       }, function(err) {
         console.log('Something went wrong!', err);
       });
@@ -190,7 +217,8 @@ app.all("/request", (req, res) => {
     }, function(err) {
       console.log('Something went wrong!', err);
     });;
-    res.end();
+
+ 
   });
 
   app.post('/followArtist', function(req, res) {
@@ -225,6 +253,27 @@ app.all("/request", (req, res) => {
 
     res.end(); // VERY IMPORTANT TO END REQUEST
   });
+
+  app.get('/getPlaylist', function(req, res) {
+
+
+    spotifyApi.getMe()
+    .then(function(data) {
+      console.log('Some information about the authenticated user', data.body);
+
+
+
+
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    })
+
+
+
+    res.end(); // VERY IMPORTANT TO END REQUEST
+  });
+
+
 
   app.listen(8888, () =>
   console.log(
