@@ -48,7 +48,7 @@ async function LoadInfoAboutSong()
 				  });
 				});
 			  };
-			async function playTrack(){
+			async function playTrack(){ // info about song from trackonplay
 
 				$.getJSON('./request', function(track) {
 						play({
@@ -141,7 +141,7 @@ slider.oninput = function() {
   function addPlaylist(item){
 	let node = document.createElement("option");
 	node.value = item.id;
-	node.innerHTML = item.name + " (" + item.tracks.total + ")";
+	node.innerHTML = item.name;
 	document.getElementById("playlists").appendChild(node); 
   }
 

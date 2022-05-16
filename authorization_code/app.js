@@ -226,14 +226,43 @@ app.get('/data', function(req, res) {
   app.post('/followArtist', function(req, res) {
 
     spotifyApi.getMyCurrentPlayingTrack()
-    .then(function(data) {
+    .then(function(playing) {
 
-      spotifyApi.followArtists([data.body.item.artists[0].id])
+      let artistsId=playing.body.item.artists[0].id;
+
+      spotifyApi.isFollowingArtists([artistsId])
       .then(function(data) {
-        console.log(data);
+        let isFollowing = data.body;
+    
+        if(isFollowing=="false"){
+
+          spotifyApi.followArtists([playing.body.item.artists[0].id])
+          .then(function(data) {
+            console.log(data);
+          }, function(err) {
+            console.log('Something went wrong!', err);
+          });
+        }else{
+
+          spotifyApi.unfollowArtists([playing.body.item.artists[0].id])
+          .then(function(data) {
+            console.log(data);
+          }, function(err) {
+            console.log('Something went wrong!', err);
+          });
+        }
+     
+
       }, function(err) {
         console.log('Something went wrong!', err);
       });
+
+
+
+
+
+
+      
 
     }, function(err) {
       console.log('Something went wrong!', err);
