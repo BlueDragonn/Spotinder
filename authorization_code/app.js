@@ -91,7 +91,6 @@ var spotifyApi = new SpotifyWebApi({
     
     app.get('/', function(req, res) {
       res.sendFile(__dirname + "/" + "/public/index.html");
-      res.redirect('/request');
     });
 
 
@@ -112,6 +111,7 @@ var recommendationSeed = [];
 var isSeedGenerated=0;
 
 app.all("/request", (req, res) => {
+
   spotifyApi.getMyTopTracks()
   .then(function(data) {
     let myTopTracks = data.body.items;
@@ -175,7 +175,8 @@ app.all("/request", (req, res) => {
       //console.log(...recommendationSeed);
     }, function(err) {
       console.log('Something went wrong!', err);
-    });;
+    });
+    res.end();
   });
 
   app.all('/addToLiked', function(req, res) {
@@ -277,7 +278,63 @@ app.all("/request", (req, res) => {
 
 
   });
+  app.all('/status', function(req, res) { // not done yet
+    var status = {
+      liked: 'false',
+      followed: 'false'
+    };
+    spotifyApi.getMyCurrentPlayingTrack()
+    .then(function(playing) {
+        console.log(playing.body.item.id);
+      spotifyApi.containsMySavedTracks(["5ybJm6GczjQOgTqmJ0BomP"])
+      .then(function(data) {
 
+        // An array is returned, where the first element corresponds to the first track ID in the query
+        var trackIsInYourMusic = data.body[0];
+
+        if (trackIsInYourMusic) {
+          console.log('Track was found in the user\'s Your Music library');
+        } else {
+          console.log('Track was not found.');
+        }
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    });
+
+  });
+
+  var playListID;
+  app.post("/addToPlaylistID", (req, res) => {
+    res.json([{
+       ID: req.body
+    }])
+    playListID=req.body.id;
+  });
+
+  app.post("/addToPlaylist", (req, res) => {
+    res.json([{
+       ID: req.body
+    }])
+
+
+    spotifyApi.getMyCurrentPlayingTrack()
+    .then(function(data) {
+      console.log(req.body, [data.body.item.uri]);
+      spotifyApi.addTracksToPlaylist(playListID, [data.body.item.uri])
+      .then(function(data) {
+        console.log('Added tracks to playlist!');
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    });
+
+  });
 
 
   app.listen(8888, () =>

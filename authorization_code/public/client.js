@@ -1,63 +1,34 @@
-window.addEventListener("load", LoadInfoAboutSong);
+//window.addEventListener("load", LoadInfoAboutSong);
+
 var playlist_id="NULL";
 
 async function LoadInfoAboutSong()
 {
-	let data = new XMLHttpRequest()
-	
-	data.open('GET', "./data", true);
+	$.getJSON('./data', function(test) {		
 
-	data.onload = function() {
-		if(data.status === 200)
-		{
-			let test = JSON.parse(this.response);
-
+		setTimeout(function(){
             document.getElementById("artist").innerHTML = test.body.item.artists[0].name;
             document.getElementById("song").innerHTML =  test.body.item.name;
             document.getElementById("cover").src =  test.body.item.album.images[0].url;
-			
-		}
-		else 
-		{
-			console.log("Error");
-        }
-		
-	}
-	data.send();
-}
+		}, 100);
+	});
 
-	var trackOnLoad;
+};
 	
-		$.getJSON('./request', function(test) {
-		trackOnLoad=test.trackToPlay;
-		});
-	
-		function refreshRecommendedSong()
-		{
-			$.getJSON('./request', function(test) {
-				trackOnLoad=test.trackToPlay;
-				});
-				console.log("Recommended: "+trackOnLoad);
-
-				setTimeout(() => {
-					LoadInfoAboutSong();
-				  }, 1200)
-		}
-
-
+	var tokenJSON;
 	$.getJSON('./auth_token', function(data) {
+		tokenJSON = data.access_token;
+	});
+	window.onSpotifyWebPlaybackSDKReady = () => {
 
-		window.onSpotifyWebPlaybackSDKReady = () => {
-			const token = data.access_token;
-			const player = new Spotify.Player({
-			  name: 'Spotinder',
-			  getOAuthToken: cb => { cb(token); },
-			  volume: 0.25
-			});
+		var player = new Spotify.Player({
+			name: 'Spotinder',
+			getOAuthToken: callback => {callback(tokenJSON); },
+			volume: 0.25
+		  });
 
-		  // Ready
+		  player.connect();
 		  player.addListener('ready', ({ device_id }) => {
-			console.log('Ready with Device ID', device_id);
 
 			const play = ({
 				spotify_uri,
@@ -78,67 +49,41 @@ async function LoadInfoAboutSong()
 				  });
 				});
 			  };
+			async function playTrack(){
 
-			  function playSongPlayer(song_uri)
-			  {
-				  play({
-					  playerInstance: player,
-					  spotify_uri: song_uri,
-					});
-					console.log("Playing: " + song_uri)
-					refreshRecommendedSong();
-					setTimeout(() => {
-						LoadInfoAboutSong();
-					  }, 1200)
-				};
+				$.getJSON('./request', function(track) {
+						play({
+						playerInstance: player,
+						spotify_uri: track.trackToPlay,
+						});
 
-			playSongPlayer(trackOnLoad);
+						setTimeout(function(){ // if track doesnt start by its self
+							player.resume();
+						}, 1000);
+				
+				});
+			}
+			playTrack();
+			player.resume();		
 
-			  document.getElementById("cover").ondragend  = function() {
+			document.getElementById("cover").ondragend  = function() {
 				var x = window.event.offsetX,
 					y = window.event.offsetY;
-				   
-				 console.log(x, y); 
-				 if(x > 500 &&  (y < 800 && y > 100))
-				 {console.log("Right")
-			
-				 
-					var right = $.post("/right",				// adding song to seed
-					   {},
-					   function (data, status) {
-						   
-					});
 					
-					 playSongPlayer(trackOnLoad);
-					setTimeout(() => {
-						LoadInfoAboutSong();
-					  }, 1200)
-					
-					  setTimeout(function() {				//aborting old request so requests do not overload
-						right.abort();
-						console.log("Request canceled."); 
-					}, 3000);
-				 ;}
-				 else if(x < 0 &&  (y < 800 && y > 100)){
-					 console.log("left")
-					 playSongPlayer(trackOnLoad);
-					 setTimeout(() => {
-						 LoadInfoAboutSong();
-					   }, 1200)
-				 ;}
-			   }
+				if(x > 500 &&  (y < 800 && y > 100)){	//swipe right
 
-		  });
-		
-		  // Not Ready
-		  player.addListener('not_ready', ({ device_id }) => {
-			console.log('Device ID has gone offline', device_id);
-		  });
+					console.log("Right");
+					$.post("/right");
+					playTrack();
 
-		  player.connect();
-		  
-		}
-	});
+				}
+				else if(x < 0 &&  (y < 800 && y > 100)){ //swipe left
+					console.log("Left");
+					playTrack();		
+				}
+			}
+		});
+	};
 
 
   /////////////////////////////////////
@@ -164,6 +109,10 @@ $("#addToLiked").click(function () {
 		
 });
 
+$("#addToPlaylist").click(function () {
+	$.post("/addToPlaylist");
+});
+
 $("#followArtist").click(function () {
 	$.post("/followArtist",
 		{},
@@ -171,11 +120,6 @@ $("#followArtist").click(function () {
 			console.log(data);
 		});
 }); 
-
-	$.getJSON('./getPlaylist', function(allPlaylistInfo) {
-		console.log(allPlaylistInfo.items[0].name);
-
-	});
 
 var slider = document.getElementById("myRange");
 
@@ -192,9 +136,7 @@ slider.oninput = function() {
 
 }
 
-setTimeout(() => {
-	LoadInfoAboutSong();
-  }, 2000)
+var t=setInterval(LoadInfoAboutSong,1500);
 
   function addPlaylist(item){
 	let node = document.createElement("option");
@@ -204,18 +146,22 @@ setTimeout(() => {
   }
 
   async function PlaylistsNames(){
-	console.log("xd1");
-  $.getJSON('./getPlaylist', (data) => {
-		  console.log("xd2");
-		  //data.items.forEach(item => addPlaylist(item));
-	  });
+
+	$.getJSON('./getPlaylist', (data) => {
+			data.items.forEach(item => addPlaylist(item));
+		});
 	}
 
   window.addEventListener("load", PlaylistsNames);
 
   document.getElementById('playlists').addEventListener('change', function() {
     playlist_id = document.getElementById("playlists").value;
+
+	$.post("/addToPlaylistID",
+		{
+			id: playlist_id,
+		});
     console.log("You selected: "+playlist_id);
   });
 
-  //end
+  
