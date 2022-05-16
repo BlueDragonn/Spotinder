@@ -153,16 +153,17 @@ app.all("/request", (req, res) => {
 });
 
   //////////////////////////////////////////////
-  app.get('/data', function(req, res) {
+app.get('/data', function(req, res) {
 
-    spotifyApi.getMyCurrentPlayingTrack()
-    .then(function(data) {
-      res.send(data)
-    }, function(err) {
-      console.log('Something went wrong!', err);
-    });;
-  
-  });
+  spotifyApi.getMyCurrentPlayingTrack()
+  .then(function(data) {
+    res.send(data)
+  }, function(err) {
+    console.log('Something went wrong!', err);
+  });;
+
+});
+
 
   app.all('/right', function(req, res) { // adding song to seed
     spotifyApi.getMyCurrentPlayingTrack()
@@ -276,33 +277,6 @@ app.all("/request", (req, res) => {
       console.log('Something went wrong!', err);
     })
 
-
-  });
-  app.all('/status', function(req, res) { // not done yet
-    var status = {
-      liked: 'false',
-      followed: 'false'
-    };
-    spotifyApi.getMyCurrentPlayingTrack()
-    .then(function(playing) {
-        console.log(playing.body.item.id);
-      spotifyApi.containsMySavedTracks(["5ybJm6GczjQOgTqmJ0BomP"])
-      .then(function(data) {
-
-        // An array is returned, where the first element corresponds to the first track ID in the query
-        var trackIsInYourMusic = data.body[0];
-
-        if (trackIsInYourMusic) {
-          console.log('Track was found in the user\'s Your Music library');
-        } else {
-          console.log('Track was not found.');
-        }
-      }, function(err) {
-        console.log('Something went wrong!', err);
-      });
-    }, function(err) {
-      console.log('Something went wrong!', err);
-    });
 
   });
 
