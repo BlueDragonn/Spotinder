@@ -10,9 +10,8 @@ async function LoadInfoAboutSong()
             document.getElementById("artist").innerHTML = test.body.item.artists[0].name;
             document.getElementById("song").innerHTML =  test.body.item.name;
             document.getElementById("cover").src =  test.body.item.album.images[0].url;
-		}, 100);
-	});
-
+		}, 900);
+	})
 };
 	
 	var tokenJSON;
@@ -82,6 +81,7 @@ async function LoadInfoAboutSong()
 					playTrack();		
 				}
 			}
+			var t=setInterval(LoadInfoAboutSong,1500);
 		});
 	};
 
@@ -136,7 +136,7 @@ slider.oninput = function() {
 
 }
 
-var t=setInterval(LoadInfoAboutSong,1500);
+
 
   function addPlaylist(item){
 	let node = document.createElement("option");
