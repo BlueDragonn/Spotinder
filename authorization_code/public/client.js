@@ -58,6 +58,16 @@ try{
 							spotify_uri: track.trackToPlay.uri,
 						});	
 						LoadPar(track);
+
+						async function checkStatus(song, artist)
+						{
+							$.post("/statusCheck",
+							{
+								song: song,
+								artist: artist
+							})
+						}
+						checkStatus(track.trackToPlay.id, track.trackToPlay.artists[0].id)
 					},0);
 				})
 				
@@ -69,6 +79,7 @@ try{
 			}catch{}
 		}
 		playTrack();
+		
 		
 		var slider = document.getElementById("myRange");
 		slider.oninput = function() {

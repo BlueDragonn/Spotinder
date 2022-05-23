@@ -102,12 +102,10 @@ var spotifyApi = new SpotifyWebApi({
       res.send(user);
     });
 
-
 ////////////////////////////////////////////////
 
 var recommendationSeed = [];
 var isSeedGenerated=0;
-var isFollowing;
 
 app.all("/request", (req, res) => {
 
@@ -278,9 +276,46 @@ app.get('/data', function(req, res) {
 
     }, function(err) {
       console.log('Something went wrong!', err);
-    });;
+    });
 
     res.end();
+  });
+
+  app.all('/statusCheck', function(req, res)  {
+    res.json([{
+      songID: req.body.song,
+      artistID: req.body.artist
+   }])
+   var status = {};
+
+   async function getStatus(){
+    spotifyApi.isFollowingArtists([req.body.artist])
+    .then(function(follow) {
+      console.log(follow.body[0]);
+      //status.like=follow.body[0];
+      if(follow.body[0]){status.like="true"}
+      else{ status.like="false"}
+    }, function(err) {
+      console.log('Something went wrong!', err);
+    });
+
+    spotifyApi.containsMySavedTracks([req.body.song])
+    .then(function(saved) {
+    // An array is returned, where the first element corresponds to the first track ID in the query
+    var trackIsInYourMusic = saved.body[0];
+      if(saved.body[0]){status.follow="true"}
+      else{ status.follow="false"}
+
+    console.log(trackIsInYourMusic);
+    });
+  }
+
+  getStatus()
+  .then(
+    res.send(status)
+  );
+ 
+    //res.end();
   });
 
   app.get('/getPlaylist', function(req, res) {
