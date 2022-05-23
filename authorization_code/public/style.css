@@ -53,6 +53,14 @@ body {
   margin-right: 1.5em;
   transition: transform 0.2s ease-out;
 }
+#addToPlaylistCircleAfter{
+fill: #ff6666;
+}
+#addToPlaylistCrossAfter{
+  transform-origin: center;
+  transform: rotate(45deg);
+}
+
 .addToPlaylist:hover {
   -webkit-transition: 0.2s;
   filter: brightness(125%);
@@ -111,6 +119,7 @@ body {
 .GreenButtons {
   background-color: #010203;
   border: 0;
+  transform-origin: center
 }
 #addToLikedCircle{
   fill: "#66D36E"

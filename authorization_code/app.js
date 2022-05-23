@@ -137,9 +137,12 @@ app.all("/request", (req, res) => {
     let recommendations = data.body;
     //console.log(recommendations);
     var inexOfSong = Math.floor(Math.random() * 3);
+
     let track = {
-      trackToPlay: recommendations.tracks[inexOfSong].uri
+       trackToPlay: recommendations.tracks[inexOfSong],
+       isSaved: "test",
     }
+   
     
     res.send(track);
     res.end();
@@ -160,7 +163,7 @@ app.get('/data', function(req, res) {
     res.send(data)
   }, function(err) {
     console.log('Something went wrong!', err);
-  });;
+  });
 
 });
 
@@ -257,32 +260,11 @@ app.get('/data', function(req, res) {
         console.log('Something went wrong!', err);
       });
 
-
-
-
-
-
-      
-
     }, function(err) {
       console.log('Something went wrong!', err);
     });;
 
     res.end();
-  });
-
-  
-  app.post('/setVolume', function(req, res) {
-
-      spotifyApi.setVolume(req.body.volume)
-    .then(function () {
-      }, function(err) {
-      //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-      console.log('Something went wrong!', err);
-    });
-
-
-    res.end(); // VERY IMPORTANT TO END REQUEST
   });
 
   app.get('/getPlaylist', function(req, res) {
@@ -300,8 +282,6 @@ app.get('/data', function(req, res) {
       },function(err) {
         console.log('Something went wrong!', err);
       });
-  
-
     }, function(err) {
       console.log('Something went wrong!', err);
     })
@@ -325,7 +305,7 @@ app.get('/data', function(req, res) {
 
     spotifyApi.getMyCurrentPlayingTrack()
     .then(function(data) {
-      console.log(req.body, [data.body.item.uri]);
+      //console.log(req.body, [data.body.item.uri]);
       spotifyApi.addTracksToPlaylist(playListID, [data.body.item.uri])
       .then(function(data) {
         console.log('Added tracks to playlist!');
