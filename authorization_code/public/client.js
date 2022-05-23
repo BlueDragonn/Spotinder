@@ -49,29 +49,26 @@ try{
 			});
 		};
 
-		async function playTrack(){ // info about song from trackonplay
+		async function playTrack(){
 			try{
-
 				var request = $.getJSON('./request', function(track) {
-					play({
-						playerInstance: player,
-						spotify_uri: track.trackToPlay.uri,
-					});	
-					LoadPar(track);
+					setTimeout(function (){
+						play({
+							playerInstance: player,
+							spotify_uri: track.trackToPlay.uri,
+						});	
+						LoadPar(track);
+					},0);
 				})
+				
 				setTimeout(function (){
 					request.abort();	
-				},2500);
+				},4500);
+
+
 			}catch{}
 		}
-		playTrack()
-		.then(
-			player.getCurrentState()
-			.then(state => {
-				if (!state) {
-					player.resume()
-				}})
-		);
+		playTrack();
 		
 		var slider = document.getElementById("myRange");
 		slider.oninput = function() {
@@ -97,6 +94,10 @@ try{
 			}
 		}
 	});
+	player.addListener('not_ready', ({ device_id }) => {
+		console.log('Device ID is not ready for playback', device_id);
+	});
+
 }catch{}
 };
 
@@ -130,8 +131,7 @@ $("#addToPlaylist").click(function () {
 	$.post("/addToPlaylist");
 	document.getElementById("addToPlaylistCircle").style.fill = "#ff6666";
 	document.getElementById("addToPlaylist").disabled = true;
-	}
-);
+});
 
 $("#followArtist").click(function () {
 	$.post("/followArtist",
@@ -167,5 +167,7 @@ document.getElementById("addToPlaylist").disabled = true;
 			id: playlist_id,
 		});
     console.log("You selected: "+playlist_id);
+	document.getElementById("addToPlaylist").disabled = false;
+	document.getElementById("addToPlaylistCircle").style.fill = "#66D36E";
 	document.getElementById("addToPlaylist").disabled = false;
   });

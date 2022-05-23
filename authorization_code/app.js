@@ -102,13 +102,12 @@ var spotifyApi = new SpotifyWebApi({
       res.send(user);
     });
 
-    var topArtists;
-
 
 ////////////////////////////////////////////////
 
 var recommendationSeed = [];
 var isSeedGenerated=0;
+var isFollowing;
 
 app.all("/request", (req, res) => {
 
@@ -140,10 +139,27 @@ app.all("/request", (req, res) => {
 
     let track = {
        trackToPlay: recommendations.tracks[inexOfSong],
-       isSaved: "test",
+      //  isSaved: "test",
+      //  isFollowing:"test",
     }
    
+    // var trackIsInYourMusic;
+    //   spotifyApi.containsMySavedTracks([recommendations.tracks[inexOfSong].id])
+    //   .then(function(saved) {
+    //   // An array is returned, where the first element corresponds to the first track ID in the query
+    //   trackIsInYourMusic = saved.body[0];
+
+    //   });
+    //   console.log(trackIsInYourMusic);
     
+    // spotifyApi.isFollowingArtists([recommendations.tracks[inexOfSong].artists[0].id])
+    // .then(function(data) {
+    //   track.isFollowing=data.body;
+    // }, function(err) {
+    //   console.log('Something went wrong!', err);
+    // });
+    // console.log(isFollowing);
+
     res.send(track);
     res.end();
 
