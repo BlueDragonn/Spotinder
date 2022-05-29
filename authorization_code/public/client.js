@@ -1,5 +1,5 @@
 var playlist_id="NULL";
-
+let arr_of_playlists_id = new Array();
 
 async function LoadPar(test)
 {
@@ -98,11 +98,12 @@ try{
 				console.log("Right");
 				$.post("/right");
 				playTrack();
-
+				arr_of_playlists_id = [];
 			}
 			else if(x < 0 &&  (y < 800 && y > 100)){ //swipe left
 				console.log("Left");
 				playTrack();
+				arr_of_playlists_id = [];
 			}
 		}
 	});
@@ -172,6 +173,7 @@ $("#addToLiked").click(function () {
 
 $("#addToPlaylist").click(function () {
 	$.post("/addToPlaylist");
+	arr_of_playlists_id.push(playlist_id);
 	document.getElementById("addToPlaylistCircle").style.fill = "#ff6666";
 	document.getElementById("addToPlaylist").disabled = true;
 });
@@ -214,12 +216,28 @@ document.getElementById("addToPlaylist").disabled = true;
   document.getElementById('playlists').addEventListener('change', function() {
     playlist_id = document.getElementById("playlists").value;
 
+	var x = false;
+	function iterate(item) {
+		if (item == playlist_id) {
+			x = true;
+		}
+	}
+	arr_of_playlists_id.forEach(iterate);
+	if (x == false) {
+		document.getElementById("addToPlaylist").disabled = false;
+	document.getElementById("addToPlaylistCircle").style.fill = "#66D36E";
+	} else {
+		document.getElementById("addToPlaylistCircle").style.fill = "#ff6666";
+		document.getElementById("addToPlaylist").disabled = true;
+	}
+
 	$.post("/addToPlaylistID",
 		{
 			id: playlist_id,
 		});
     console.log("You selected: "+playlist_id);
-	document.getElementById("addToPlaylist").disabled = false;
-	document.getElementById("addToPlaylistCircle").style.fill = "#66D36E";
-	document.getElementById("addToPlaylist").disabled = false;
+	//document.getElementById("addToPlaylist").disabled = false;
+	//document.getElementById("addToPlaylistCircle").style.fill = "#66D36E";
+	//document.getElementById("addToPlaylist").disabled = false;
   });
+  
