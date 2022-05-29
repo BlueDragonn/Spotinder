@@ -86,6 +86,7 @@ var spotifyApi = new SpotifyWebApi({
     
     //////////////////////////////////////////////
     const path = require('path');       // for opening .html files after entering url
+    const { send } = require('process');
     app.use(express.static('public'))
     app.use(express.urlencoded({ extended: true }));
     
@@ -135,29 +136,9 @@ app.all("/request", (req, res) => {
     //console.log(recommendations);
     var inexOfSong = Math.floor(Math.random() * 3);
 
-    let track = {
+    var track = {
        trackToPlay: recommendations.tracks[inexOfSong],
-      //  isSaved: "test",
-      //  isFollowing:"test",
     }
-   
-    // var trackIsInYourMusic;
-    //   spotifyApi.containsMySavedTracks([recommendations.tracks[inexOfSong].id])
-    //   .then(function(saved) {
-    //   // An array is returned, where the first element corresponds to the first track ID in the query
-    //   trackIsInYourMusic = saved.body[0];
-
-    //   });
-    //   console.log(trackIsInYourMusic);
-    
-    // spotifyApi.isFollowingArtists([recommendations.tracks[inexOfSong].artists[0].id])
-    // .then(function(data) {
-    //   track.isFollowing=data.body;
-    // }, function(err) {
-    //   console.log('Something went wrong!', err);
-    // });
-    // console.log(isFollowing);
-
     res.send(track);
     res.end();
 
@@ -216,7 +197,7 @@ app.get('/data', function(req, res) {
             }, function(err) {
               console.log('Something went wrong!', err);
             });
-            res.send("notFollowed");
+            res.send("Saved");
           
         } else { //'Track was not found.'
 
@@ -227,7 +208,7 @@ app.get('/data', function(req, res) {
             console.log('Something went wrong!', err);
           });
 
-          res.send("Followed");
+          res.send("notSaved");
         }
       }, function(err) {
         console.log('Something went wrong!', err);
@@ -240,8 +221,7 @@ app.get('/data', function(req, res) {
  
   });
 
-  app.post('/followArtist', function(req, res) {
-
+  app.all('/followArtist', function(req, res) {
     spotifyApi.getMyCurrentPlayingTrack()
     .then(function(playing) {
 
@@ -250,26 +230,22 @@ app.get('/data', function(req, res) {
       spotifyApi.isFollowingArtists([artistsId])
       .then(function(data) {
         let isFollowing = data.body;
-    
+        
         if(isFollowing=="false"){
-
+          
           spotifyApi.followArtists([playing.body.item.artists[0].id])
           .then(function(data) {
-            console.log(data);
           }, function(err) {
             console.log('Something went wrong!', err);
           });
         }else{
-
           spotifyApi.unfollowArtists([playing.body.item.artists[0].id])
           .then(function(data) {
-            console.log(data);
           }, function(err) {
             console.log('Something went wrong!', err);
           });
         }
-     
-
+        return res.send(data.body[0]);  
       }, function(err) {
         console.log('Something went wrong!', err);
       });
@@ -278,43 +254,28 @@ app.get('/data', function(req, res) {
       console.log('Something went wrong!', err);
     });
 
-    res.end();
+    //res.end();
   });
 
-  app.all('/statusCheck', function(req, res)  {
-    res.json([{
-      songID: req.body.song,
-      artistID: req.body.artist
-   }])
-   var status = {};
+  app.all('/statusINFO', function(req, res) {
+    spotifyApi.getMyCurrentPlayingTrack()
+    .then(function(playing) {
 
-   async function getStatus(){
-    spotifyApi.isFollowingArtists([req.body.artist])
-    .then(function(follow) {
-      console.log(follow.body[0]);
-      //status.like=follow.body[0];
-      if(follow.body[0]){status.like="true"}
-      else{ status.like="false"}
+      let artistsId=playing.body.item.artists[0].id;
+
+      spotifyApi.isFollowingArtists([artistsId])
+      .then(function(data) {
+        
+    
+        return res.send(data.body[0]);  
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+
     }, function(err) {
       console.log('Something went wrong!', err);
     });
 
-    spotifyApi.containsMySavedTracks([req.body.song])
-    .then(function(saved) {
-    // An array is returned, where the first element corresponds to the first track ID in the query
-    var trackIsInYourMusic = saved.body[0];
-      if(saved.body[0]){status.follow="true"}
-      else{ status.follow="false"}
-
-    console.log(trackIsInYourMusic);
-    });
-  }
-
-  getStatus()
-  .then(
-    res.send(status)
-  );
- 
     //res.end();
   });
 

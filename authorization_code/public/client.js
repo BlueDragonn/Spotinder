@@ -9,7 +9,6 @@ async function LoadPar(test)
 
 	document.getElementById("addToPlaylistCircle").style.fill = "#66D36E";
 	document.getElementById("addToPlaylist").disabled = false;
-
 }
 
 	
@@ -57,17 +56,19 @@ try{
 							playerInstance: player,
 							spotify_uri: track.trackToPlay.uri,
 						});	
-						LoadPar(track);
-
-						async function checkStatus(song, artist)
-						{
-							$.post("/statusCheck",
-							{
-								song: song,
-								artist: artist
+						LoadPar(track)
+						.then(
+							setTimeout(function (){
+							$.getJSON('./statusINFO', function(status) {
+								if(status){
+									toggleFollowed(0);
+								}
+								else{
+									toggleFollowed(1);
+								}
 							})
-						}
-						checkStatus(track.trackToPlay.id, track.trackToPlay.artists[0].id)
+							},2000)
+						)
 					},0);
 				})
 				
@@ -114,7 +115,7 @@ try{
 
 
 
-/////////////////////////////////////
+  /////////////////////////////////////
 
 
 $(document).ready(function () {
@@ -127,16 +128,47 @@ $(document).ready(function () {
 	});
  });
 
+async function toggleLiked(data){
+	if(data)
+	{
+		document.getElementById("addToLikedCircle").style.fill = "#66D36E";
+		console.log("working")
+	}
+	else{
+		console.log("working")
+		document.getElementById("addToLikedCircle").style.fill = "#ff6666";
+	}
+};
+
+async function toggleFollowed(data){
+	if(data)
+	{
+		document.getElementById("followArtist").disabled = false;
+		document.getElementById("followArtist").style.display = "flex";
+		
+		document.getElementById("UNfollowArtistButton").style.display = "none";
+		document.getElementById("UNfollowArtistButton").disabled = true
+	}
+	else{
+		document.getElementById("followArtist").disabled = true
+		document.getElementById("followArtist").style.display = "none";
+
+		document.getElementById("UNfollowArtistButton").disabled = false;
+		document.getElementById("UNfollowArtistButton").style.display = "flex";
+		
+	}
+};
 
 $("#addToLiked").click(function () {
 	$.post("/addToLiked",
 		{},
 		function (data, status) {
 			console.log(data);
+			if(data=="Saved"){toggleLiked(1);}
+			else{toggleLiked(0);}
 	});
-	toggleLikedButtonColor();
-		
 });
+
 
 $("#addToPlaylist").click(function () {
 	$.post("/addToPlaylist");
@@ -144,12 +176,21 @@ $("#addToPlaylist").click(function () {
 	document.getElementById("addToPlaylist").disabled = true;
 });
 
-$("#followArtist").click(function () {
+async function follow(){
 	$.post("/followArtist",
 		{},
 		function (data, status) {
+			toggleFollowed(data);
 			console.log(data);
 		});
+};
+
+$("#followArtist").click(function () {
+	follow();
+}); 
+$("#UNfollowArtistButton").click(function () {
+	follow();
+	console.log("unfolow")
 }); 
 
 
